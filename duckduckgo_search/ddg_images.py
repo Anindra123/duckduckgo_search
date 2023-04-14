@@ -26,6 +26,7 @@ def ddg_images(
     page=1,
     output=None,
     download=False,
+    filter=None,
 ):
     """DuckDuckGo images search. Query params: https://duckduckgo.com/params
 
@@ -50,6 +51,8 @@ def ddg_images(
         output (Optional[str], optional): csv, json. Defaults to None.
         download (bool, optional): if True, download and save images to 'keywords' folder.
             Defaults to False.
+        filter (Function,optional) : A filtering function for further filtering the respones before
+        downloading the images
 
     Returns:
         Optional[List[dict]]: DuckDuckGo text search results.
@@ -135,6 +138,10 @@ def ddg_images(
     # save to csv or json file
     if output:
         _do_output("ddg_images", keywords, output, results)
+
+    # apply filtering
+    if filter:
+        results = list(map(filter,results))
 
     # download images
     if download:

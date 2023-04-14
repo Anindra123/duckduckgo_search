@@ -1,6 +1,7 @@
 import os
 import os.path
 import shutil
+import re
 from random import randrange
 
 from duckduckgo_search import ddg_images
@@ -94,3 +95,27 @@ def test_ddg_images_not_results():
         max_results=50,
     )
     assert len(r) == 0
+
+
+def test_check_image_result_filtering():
+    keyword = 'bangladeshi 100 taka note site:https://en.numista.com'
+    r1 = ddg_images(keywords=keyword,
+                   safesearch='off',
+                   layout='Wide',
+                   max_results=50,
+                   size='Large')
+
+    assert len(r1) >= 50
+    p = re.compile(r"100-Taka")
+    filter_func = lambda x : p.search(x['title']) is not None
+
+    r1_filtered = list(map(filter_func,r1))
+
+    r2_filtered = ddg_images(keywords=keyword,
+                   safesearch='off',
+                   layout='Wide',
+                   max_results=50,
+                   size='Large',
+                   filter=filter_func)
+
+    assert len(r1_filtered) == len(r2_filtered)
