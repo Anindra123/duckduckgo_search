@@ -97,7 +97,7 @@ def test_ddg_images_not_results():
     assert len(r) == 0
 
 
-def test_check_image_result_filtering():
+def test_ddg_images_check_image_result_filtering():
     keyword = 'bangladeshi 100 taka note site:https://en.numista.com'
     r1 = ddg_images(keywords=keyword,
                    safesearch='off',
@@ -118,7 +118,7 @@ def test_check_image_result_filtering():
     assert  len(r2_filtered) < len(r1)
 
 
-def test_filter_with_image_download():
+def test_ddg_images_filter_with_image_download():
     keyword = 'bangladeshi 100 taka note site:en.numista.com'
     filter_func = lambda x: '100 taka' in x['title'].lower() and x['width'] > 1280
     r1 = ddg_images(keywords=keyword,
@@ -145,4 +145,12 @@ def test_filter_with_image_download():
         raise AssertionError('Path does not exist')
 
 
+def test_ddg_images_custom_header():
+    keyword = 'bangladeshi 100 taka note site:realbanknotes.com'
+    filter_func = lambda x: x['width'] - x['height'] > 300 and '100 Taka' in x['title']
+    custom_h = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0",
+                "Referer": "https://www.realbanknotes.com"}
+    r = ddg_images(keywords=keyword, safesearch='off', layout='Wide', max_results=50, size='Large'
+                   , filter_results=filter_func, download=True,custom_header=custom_h)
 
+    assert len(r) < 50

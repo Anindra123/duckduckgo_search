@@ -80,10 +80,12 @@ def _save_csv(csvfile, data):
             writer.writerows(data)
 
 
-def _download_file(url, dir_path, filename):
+def _download_file(url, dir_path, filename,custom_header=None):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0"
     }
+    if custom_header:
+        headers = custom_header
     try:
         with requests.get(url, headers=headers, stream=True, timeout=10) as resp:
             resp.raise_for_status()

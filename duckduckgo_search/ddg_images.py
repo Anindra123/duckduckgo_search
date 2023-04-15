@@ -27,6 +27,7 @@ def ddg_images(
     output=None,
     download=False,
     filter_results=None,
+    custom_header=None
 ):
     """DuckDuckGo images search. Query params: https://duckduckgo.com/params
 
@@ -51,8 +52,10 @@ def ddg_images(
         output (Optional[str], optional): csv, json. Defaults to None.
         download (bool, optional): if True, download and save images to 'keywords' folder.
             Defaults to False.
-        filter_results (Function,optional) : A filtering function for further filtering the responses before
-        downloading the images
+        filter_results (Function,optional) : A filtering function for further filtering the responses
+        before downloading the images. Defaults to None.
+        custom_header(dict,optional): If user wants to provide some custom header that will override
+        the default header when downloading file. Defaults to None.
 
     Returns:
         Optional[List[dict]]: DuckDuckGo text search results.
@@ -147,7 +150,7 @@ def ddg_images(
     if download:
         keywords = keywords.replace('"', "'")
         if keywords.find('site'):
-            keywords = keywords[0:keywords.find('site')]
+            keywords = keywords[0:keywords.find('site')] + keywords[keywords.find('site'):].split(':')[-1]
 
         logger.info(f'Making directory {keywords}')
         path = f"ddg_images_{keywords}_{datetime.now():%Y%m%d_%H%M%S}"
@@ -158,7 +161,7 @@ def ddg_images(
             for i, res in enumerate(results, start=1):
                 filename = unquote(res["image"].split("/")[-1].split("?")[0])
                 future = executor.submit(
-                    _download_file, res["image"], path, f"{i}_{filename}"
+                    _download_file, res["image"], path, f"{i}_{filename}", custom_header
                 )
                 futures.append(future)
             with progressbar(
