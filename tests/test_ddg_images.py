@@ -144,6 +144,56 @@ def test_ddg_images_filter_with_image_download():
     if not flag:
         raise AssertionError('Path does not exist')
 
+def test_ddg_images_filter_with_image_download_https():
+    keyword = 'bangladeshi 100 taka note site:https://www.realbanknotes.com'
+    filter_func = lambda x: '100 taka' in x['title'].lower() and x['width'] > 1280
+    r1 = ddg_images(keywords=keyword,
+                    safesearch='off',
+                    layout='Wide',
+                    max_results=100,
+                    size='Large',
+                    download=True,
+                    filter_results=filter_func
+                    )
+
+    assert len(r1) < 100
+    flag = False
+    for dir in os.listdir("."):
+        if f"ddg_images_{keyword[0:keyword.find('site')]}" in dir:
+            flag = True
+            shutil.rmtree(dir)
+            break
+        else:
+            flag = False
+
+    if not flag:
+        raise AssertionError('Path does not exist')
+
+
+def test_ddg_images_filter_with_image_download_https_www():
+    keyword = 'bangladeshi 100 taka note site:https://realbanknotes.com'
+    filter_func = lambda x: '100 taka' in x['title'].lower() and x['width'] > 1280
+    r1 = ddg_images(keywords=keyword,
+                    safesearch='off',
+                    layout='Wide',
+                    max_results=100,
+                    size='Large',
+                    download=True,
+                    filter_results=filter_func
+                    )
+
+    assert len(r1) < 100
+    flag = False
+    for dir in os.listdir("."):
+        if f"ddg_images_{keyword[0:keyword.find('site')]}" in dir:
+            flag = True
+            shutil.rmtree(dir)
+            break
+        else:
+            flag = False
+
+    if not flag:
+        raise AssertionError('Path does not exist')
 
 def test_ddg_images_custom_header():
     keyword = 'bangladeshi 100 taka note site:realbanknotes.com'

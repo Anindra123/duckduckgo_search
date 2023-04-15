@@ -149,6 +149,8 @@ def ddg_images(
     # download images
     if download:
         keywords = keywords.replace('"', "'")
+        if keywords.find('https://') and keywords.find('site'):
+            keywords = keywords[0:keywords.find('site')] + keywords[keywords.find('https://'):].split('/')[-1]
         if keywords.find('site'):
             keywords = keywords[0:keywords.find('site')] + keywords[keywords.find('site'):].split(':')[-1]
 
