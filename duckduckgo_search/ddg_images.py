@@ -26,7 +26,7 @@ def ddg_images(
     page=1,
     output=None,
     download=False,
-    filter=None,
+    filter_results=None,
 ):
     """DuckDuckGo images search. Query params: https://duckduckgo.com/params
 
@@ -51,7 +51,7 @@ def ddg_images(
         output (Optional[str], optional): csv, json. Defaults to None.
         download (bool, optional): if True, download and save images to 'keywords' folder.
             Defaults to False.
-        filter (Function,optional) : A filtering function for further filtering the respones before
+        filter_results (Function,optional) : A filtering function for further filtering the responses before
         downloading the images
 
     Returns:
@@ -140,13 +140,18 @@ def ddg_images(
         _do_output("ddg_images", keywords, output, results)
 
     # apply filtering
-    if filter:
-        results = list(map(filter,results))
+    if filter_results:
+        results = list(filter(filter_results,results))
 
     # download images
     if download:
         keywords = keywords.replace('"', "'")
+        if keywords.find('site'):
+            keywords = keywords[0:keywords.find('site')]
+
+        logger.info(f'Making directory {keywords}')
         path = f"ddg_images_{keywords}_{datetime.now():%Y%m%d_%H%M%S}"
+
         os.makedirs(path, exist_ok=True)
         futures = []
         with ThreadPoolExecutor(30) as executor:

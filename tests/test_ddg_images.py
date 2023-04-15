@@ -106,16 +106,43 @@ def test_check_image_result_filtering():
                    size='Large')
 
     assert len(r1) >= 50
-    p = re.compile(r"100-Taka")
-    filter_func = lambda x : p.search(x['title']) is not None
-
-    r1_filtered = list(map(filter_func,r1))
+    filter_func = lambda x : x['width'] > 1280
 
     r2_filtered = ddg_images(keywords=keyword,
                    safesearch='off',
                    layout='Wide',
                    max_results=50,
                    size='Large',
-                   filter=filter_func)
+                   )
 
-    assert len(r1_filtered) == len(r2_filtered)
+    assert  len(r2_filtered) < len(r1)
+
+
+def test_filter_with_image_download():
+    keyword = 'bangladeshi 100 taka note site:en.numista.com'
+    filter_func = lambda x: '100 taka' in x['title'].lower() and x['width'] > 1280
+    r1 = ddg_images(keywords=keyword,
+                    safesearch='off',
+                    layout='Wide',
+                    max_results=100,
+                    size='Large',
+                    download=True,
+                    filter_results=filter_func
+                    )
+
+    assert len(r1) < 100
+    flag = False
+    for dir in os.listdir("."):
+        if f"ddg_images_{keyword[0:keyword.find('site')]}" in dir:
+            flag = True
+            shutil.rmtree(dir)
+            break
+        else:
+            flag = False
+
+
+    if not flag:
+        raise AssertionError('Path does not exist')
+
+
+
