@@ -27,7 +27,8 @@ def ddg_images(
     output=None,
     download=False,
     filter_results=None,
-    custom_header=None
+    custom_header=None,
+    custom_folder_name=None
 ):
     """DuckDuckGo images search. Query params: https://duckduckgo.com/params
 
@@ -56,6 +57,7 @@ def ddg_images(
         before downloading the images. Defaults to None.
         custom_header(dict,optional): If user wants to provide some custom header that will override
         the default header when downloading file. Defaults to None.
+        custom_folder_name(Optional[str],optional) : override the default folder name with custom
 
     Returns:
         Optional[List[dict]]: DuckDuckGo text search results.
@@ -156,7 +158,8 @@ def ddg_images(
 
         logger.info(f'Making directory {keywords}')
         path = f"ddg_images_{keywords}_{datetime.now():%Y%m%d_%H%M%S}"
-
+        if custom_folder_name:
+            path = custom_folder_name
         os.makedirs(path, exist_ok=True)
         futures = []
         with ThreadPoolExecutor(30) as executor:
